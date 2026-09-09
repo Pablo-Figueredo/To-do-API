@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lista de tarefas</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+    :root {
+      --ink: #202d32;
+      --muted: #718085;
+      --paper: #f6f8f5;
+      --surface: #ffffff;
+      --line: #dfe7e4;
+      --mint: #bfe8d5;
+      --mint-strong: #2c9b70;
+      --coral: #ef806c;
+      --shadow: 0 18px 55px rgba(43, 69, 61, .09);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: 'DM Sans', sans-serif;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0 0 auto;
+      height: 340px;
+      z-index: -1;
+      background: linear-gradient(125deg, #d9f0e2 0%, #f6f8f5 62%);
+    }
+    .shell { width: min(1080px, calc(100% - 36px)); margin: 0 auto; padding: 44px 0 64px; }
+    header { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; margin-bottom: 42px; }
+    .eyebrow { margin: 0 0 12px; color: var(--mint-strong); font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    h1, h2 { font-family: 'Space Grotesk', sans-serif; letter-spacing: -.04em; }
+    h1 { max-width: 580px; margin: 0; font-size: clamp(2.45rem, 7vw, 5rem); line-height: .98; }
+    .subtitle { max-width: 540px; margin: 18px 0 0; color: var(--muted); font-size: 1.05rem; line-height: 1.55; }
+    .api-status { display: flex; align-items: center; gap: 9px; padding: 10px 14px; border: 1px solid rgba(44,155,112,.2); border-radius: 99px; color: var(--mint-strong); background: rgba(255,255,255,.65); font-size: .82rem; font-weight: 600; white-space: nowrap; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mint-strong); box-shadow: 0 0 0 4px rgba(44,155,112,.12); }
+    .layout { display: grid; grid-template-columns: 310px 1fr; gap: 24px; align-items: start; }
+    .panel, .task-area { border: 1px solid rgba(223,231,228,.9); border-radius: 18px; background: rgba(255,255,255,.82); box-shadow: var(--shadow); }
+    .panel { padding: 24px; }
+    .panel h2 { margin: 0 0 20px; font-size: 1.2rem; }
+    .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 26px; }
+    .stat { padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+    .stat strong { display: block; font-family: 'Space Grotesk', sans-serif; font-size: 1.65rem; }
+    .stat span { color: var(--muted); font-size: .78rem; }
+    .new-task { display: grid; gap: 10px; }
+    label { color: var(--muted); font-size: .78rem; font-weight: 600; }
+    input { width: 100%; padding: 13px 14px; border: 1px solid var(--line); border-radius: 10px; outline: none; color: var(--ink); background: var(--surface); font: inherit; }
+    input:focus { border-color: var(--mint-strong); box-shadow: 0 0 0 3px rgba(44,155,112,.12); }
+    button { border: 0; border-radius: 10px; padding: 13px 16px; cursor: pointer; font: inherit; font-weight: 700; transition: transform .2s, box-shadow .2s, background .2s; }
+    button:hover { transform: translateY(-1px); }
+    .primary { color: #fff; background: var(--ink); box-shadow: 0 7px 16px rgba(32,45,50,.18); }
+    .primary:hover { background: #31444a; }
+    .task-area { min-height: 476px; padding: 24px 26px; }
+    .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+    .toolbar h2 { margin: 0; font-size: 1.35rem; }
+    .filters { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); }
+    .filter { padding: 7px 10px; color: var(--muted); background: transparent; font-size: .78rem; }
+    .filter.active { color: var(--ink); background: var(--surface); box-shadow: 0 2px 8px rgba(43,69,61,.08); }
+    #task-list { display: grid; gap: 10px; margin-top: 20px; }
+    .task { display: flex; align-items: center; gap: 13px; padding: 15px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); animation: appear .35s both; }
+    .check { display: grid; flex: 0 0 23px; width: 23px; height: 23px; padding: 0; place-items: center; border: 1.5px solid #b7c8c1; border-radius: 50%; color: transparent; background: transparent; font-size: .8rem; }
+    .task.done .check { border-color: var(--mint-strong); color: white; background: var(--mint-strong); }
+    .task-title { flex: 1; margin: 0; font-weight: 600; }
+    .task.done .task-title { color: #9aa9a5; text-decoration: line-through; }
+    .delete { padding: 7px 9px; color: var(--muted); background: transparent; font-size: 1rem; }
+    .delete:hover { color: var(--coral); background: #fff1ee; }
+    .empty { padding: 70px 20px; color: var(--muted); text-align: center; }
+    .empty strong { display: block; margin-bottom: 7px; color: var(--ink); font-family: 'Space Grotesk'; font-size: 1.15rem; }
+    .hint { margin: 24px 0 0; color: var(--muted); font-size: .75rem; line-height: 1.5; }
+    @keyframes appear { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 760px) {
+      .shell { padding-top: 28px; }
+      header { display: block; margin-bottom: 30px; }
+      .api-status { display: inline-flex; margin-top: 22px; }
+      .layout { grid-template-columns: 1fr; }
+      .toolbar { align-items: flex-start; flex-direction: column; }
+      .filters { width: 100%; }
+      .filter { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <p class="eyebrow">To-do API / painel</p>
+        <h1>Menos abas.<br />Mais feito.</h1>
+        <p class="subtitle">Uma visão simples para acompanhar suas tarefas, testar a API e manter o dia em movimento.</p>
+      </div>
+      <div class="api-status"><span class="dot"></span><span id="status-text">Modo demonstração</span></div>
+    </header>
+
+    <section class="layout">
+      <aside class="panel">
+        <h2>Resumo</h2>
+        <div class="stats">
+          <div class="stat"><strong id="total">0</strong><span>Total</span></div>
+          <div class="stat"><strong id="pending">0</strong><span>Pendentes</span></div>
+          <div class="stat"><strong id="done">0</strong><span>Concluídas</span></div>
+          <div class="stat"><strong id="progress">0%</strong><span>Progresso</span></div>
+        </div>
+        <form class="new-task" id="task-form">
+          <label for="title">Nova tarefa</label>
+          <input id="title" name="title" placeholder="O que precisa ser feito?" autocomplete="off" required />
+          <button class="primary" type="submit">Adicionar tarefa</button>
+        </form>
+        <p class="hint">Os dados ficam neste navegador em modo demonstração. O painel tenta usar sua API em <strong>localhost:3000</strong> quando ela estiver disponível.</p>
+      </aside>
+
+      <section class="task-area">
+        <div class="toolbar">
+          <h2>Minhas tarefas</h2>
+          <div class="filters" aria-label="Filtros de tarefas">
+            <button class="filter active" data-filter="all">Todas</button>
+            <button class="filter" data-filter="pending">Pendentes</button>
+            <button class="filter" data-filter="done">Concluídas</button>
+          </div>
+        </div>
+        <div id="task-list"></div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const API_URL = 'http://localhost:3000/tarefa';
+    const demoTasks = [
+      { id: 1, titulo: 'Conectar o banco às rotas', concluida: true },
+      { id: 2, titulo: 'Testar a criação de tarefas', concluida: false },
+      { id: 3, titulo: 'Planejar a próxima entrega', concluida: false }
+    ];
+    let tasks = JSON.parse(localStorage.getItem('todo-api-tasks') || 'null') || demoTasks;
+    let currentFilter = 'all';
+    let apiAvailable = false;
+
+    const save = () => localStorage.setItem('todo-api-tasks', JSON.stringify(tasks));
+    const visibleTasks = () => tasks.filter((task) => currentFilter === 'all' || (currentFilter === 'done' ? task.concluida : !task.concluida));
+
+    function render() {
+      const completed = tasks.filter((task) => task.concluida).length;
+      document.querySelector('#total').textContent = tasks.length;
+      document.querySelector('#pending').textContent = tasks.length - completed;
+      document.querySelector('#done').textContent = completed;
+      document.querySelector('#progress').textContent = tasks.length ? Math.round(completed / tasks.length * 100) + '%' : '0%';
+      const list = document.querySelector('#task-list');
+      const filtered = visibleTasks();
+      list.innerHTML = filtered.length ? filtered.map((task) => `
+        <article class="task ${task.concluida ? 'done' : ''}">
+          <button class="check" data-toggle="${task.id}" aria-label="Alternar tarefa">✓</button>
+          <p class="task-title">${escapeHtml(task.titulo)}</p>
+          <button class="delete" data-delete="${task.id}" aria-label="Excluir tarefa">×</button>
+        </article>`).join('') : '<div class="empty"><strong>Nada por aqui ainda.</strong>Adicione uma tarefa ou troque o filtro.</div>';
+    }
+
+    function escapeHtml(value) {
+      return String(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
+    }
+
+    async function tryApi() {
+      try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error('API indisponível');
+        const remoteTasks = await response.json();
+        if (Array.isArray(remoteTasks)) tasks = remoteTasks.map((task) => ({ ...task, concluida: Boolean(task.concluida) }));
+        apiAvailable = true;
+        document.querySelector('#status-text').textContent = 'API conectada';
+        document.querySelector('.dot').style.background = '#2c9b70';
+        save(); render();
+      } catch (error) {
+        document.querySelector('#status-text').textContent = 'Modo demonstração';
+      }
+    }
+
+    document.querySelector('#task-form').addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const input = document.querySelector('#title');
+      const title = input.value.trim();
+      if (!title) return;
+      if (apiAvailable) {
+        try {
+          const response = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ titulo: title }) });
+          if (response.ok) tasks.push(await response.json());
+        } catch (error) { tasks.push({ id: Date.now(), titulo: title, concluida: false }); }
+      } else tasks.push({ id: Date.now(), titulo: title, concluida: false });
+      input.value = ''; save(); render();
+    });
+
+    document.querySelector('#task-list').addEventListener('click', async (event) => {
+      const toggleId = event.target.dataset.toggle;
+      const deleteId = event.target.dataset.delete;
+      if (toggleId) {
+        const task = tasks.find((item) => item.id === Number(toggleId));
+        if (task) task.concluida = !task.concluida;
+      }
+      if (deleteId) tasks = tasks.filter((item) => item.id !== Number(deleteId));
+      save(); render();
+    });
+
+    document.querySelectorAll('.filter').forEach((button) => button.addEventListener('click', () => {
+      currentFilter = button.dataset.filter;
+      document.querySelectorAll('.filter').forEach((item) => item.classList.toggle('active', item === button));
+      render();
+    }));
+
+    render();
+    tryApi();
+  </script>
+</body>
+</html>
