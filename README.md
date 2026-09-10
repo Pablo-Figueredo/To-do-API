@@ -29,3 +29,13 @@ O front-end presente neste projeto foi desenvolvido com auxílio de IA e tem ape
 O foco principal deste projeto é o desenvolvimento do Back-end, especialmente a criação da API, implementação das rotas, lógica do CRUD e, posteriormente, integração com banco de dados.
 
 O front-end não representa o foco principal do projeto.
+
+versão 0.3 — Refatoração do código
+
+Refatorar o código para uma melhor organização:
+
+* [x] Separação do código em rotas, controller e model
+* [x] Criação do `TarefaController` para organizar as ações das rotas
+* [x] Criação do model `Tarefa` com as operações de criar, listar, atualizar e remover tarefas
+
+O projeto continua utilizando armazenamento em memória. Os dados são perdidos quando o servidor é reiniciado.

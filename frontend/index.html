@@ -142,6 +142,11 @@
     let apiAvailable = false;
 
     const save = () => localStorage.setItem('todo-api-tasks', JSON.stringify(tasks));
+    const setApiStatus = (connected) => {
+      apiAvailable = connected;
+      document.querySelector('#status-text').textContent = connected ? 'API conectada' : 'Modo demonstração';
+      document.querySelector('.dot').style.background = connected ? '#2c9b70' : '#ef806c';
+    };
     const visibleTasks = () => tasks.filter((task) => currentFilter === 'all' || (currentFilter === 'done' ? task.concluida : !task.concluida));
 
     function render() {
@@ -170,12 +175,10 @@
         if (!response.ok) throw new Error('API indisponível');
         const remoteTasks = await response.json();
         if (Array.isArray(remoteTasks)) tasks = remoteTasks.map((task) => ({ ...task, concluida: Boolean(task.concluida) }));
-        apiAvailable = true;
-        document.querySelector('#status-text').textContent = 'API conectada';
-        document.querySelector('.dot').style.background = '#2c9b70';
+        setApiStatus(true);
         save(); render();
       } catch (error) {
-        document.querySelector('#status-text').textContent = 'Modo demonstração';
+        setApiStatus(false);
       }
     }
 
@@ -187,8 +190,12 @@
       if (apiAvailable) {
         try {
           const response = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ titulo: title }) });
-          if (response.ok) tasks.push(await response.json());
-        } catch (error) { tasks.push({ id: Date.now(), titulo: title, concluida: false }); }
+          if (!response.ok) throw new Error('Não foi possível criar a tarefa');
+          tasks.push(await response.json());
+        } catch (error) {
+          setApiStatus(false);
+          tasks.push({ id: Date.now(), titulo: title, concluida: false });
+        }
       } else tasks.push({ id: Date.now(), titulo: title, concluida: false });
       input.value = ''; save(); render();
     });
@@ -198,9 +205,35 @@
       const deleteId = event.target.dataset.delete;
       if (toggleId) {
         const task = tasks.find((item) => item.id === Number(toggleId));
-        if (task) task.concluida = !task.concluida;
+        if (task) {
+          const concluida = !task.concluida;
+          if (apiAvailable) {
+            try {
+              const response = await fetch(`${API_URL}/${task.id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ titulo: task.titulo, concluida })
+              });
+              if (!response.ok) throw new Error('Não foi possível atualizar a tarefa');
+              Object.assign(task, await response.json());
+            } catch (error) {
+              setApiStatus(false);
+              task.concluida = concluida;
+            }
+          } else task.concluida = concluida;
+        }
       }
-      if (deleteId) tasks = tasks.filter((item) => item.id !== Number(deleteId));
+      if (deleteId) {
+        if (apiAvailable) {
+          try {
+            const response = await fetch(`${API_URL}/${deleteId}`, { method: 'DELETE' });
+            if (!response.ok) throw new Error('Não foi possível excluir a tarefa');
+          } catch (error) {
+            setApiStatus(false);
+          }
+        }
+        tasks = tasks.filter((item) => item.id !== Number(deleteId));
+      }
       save(); render();
     });
 
