@@ -1,43 +1,18 @@
-import db from '../config/db.js';
+import mongoose from 'mongoose';
 
-const Tarefa = {
-  criar(titulo) {
-    const tarefa = {
-      id: db.length + 1,
-      titulo,
-      concluida: false
-    };
-
-    db.push(tarefa);
-    return tarefa;
+const tarefaSchema = new mongoose.Schema({
+  titulo: {
+    type: String,
+    required: true
   },
-
-  listar() {
-    return db;
-  },
-
-  atualizar(id, dados) {
-    const tarefa = db.find((item) => item.id === Number(id));
-
-    if (!tarefa) {
-      throw new Error('Tarefa não encontrada');
-    }
-
-    Object.assign(tarefa, dados);
-
-    return tarefa;
-  },
-
-  remover(id) {
-    const indice = db.findIndex((item) => item.id === Number(id));
-
-    if (indice === -1) {
-      throw new Error('Tarefa não encontrada');
-    }
-
-    db.splice(indice, 1);
+  concluida: {
+    type: Boolean,
+    default: false
   }
-};
+},{
+  versionKey: false
+} 
+);
 
+const Tarefa = mongoose.model('Tarefa', tarefaSchema);
 export default Tarefa;
-

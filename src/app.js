@@ -3,6 +3,12 @@ import cors from 'cors';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import routes from './routes.js';
+import db from './config/dbConnect.js';
+
+db.on("error", console.log.bind(console, 'Erro de conexão'))
+db.once("open", () => {
+  console.log('conexão com o banco feita com sucesso')
+})
 
 const app = express();
 const currentFile = fileURLToPath(import.meta.url);
@@ -12,5 +18,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(currentDirectory, '../frontend')));
 app.use(routes);
+
 
 export default app;

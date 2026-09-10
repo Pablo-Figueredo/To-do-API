@@ -159,9 +159,9 @@
       const filtered = visibleTasks();
       list.innerHTML = filtered.length ? filtered.map((task) => `
         <article class="task ${task.concluida ? 'done' : ''}">
-          <button class="check" data-toggle="${task.id}" aria-label="Alternar tarefa">✓</button>
+          <button class="check" data-toggle="${task._id || task.id}" aria-label="Alternar tarefa">✓</button>
           <p class="task-title">${escapeHtml(task.titulo)}</p>
-          <button class="delete" data-delete="${task.id}" aria-label="Excluir tarefa">×</button>
+          <button class="delete" data-delete="${task._id || task.id}" aria-label="Excluir tarefa">×</button>
         </article>`).join('') : '<div class="empty"><strong>Nada por aqui ainda.</strong>Adicione uma tarefa ou troque o filtro.</div>';
     }
 
@@ -187,16 +187,19 @@
       const input = document.querySelector('#title');
       const title = input.value.trim();
       if (!title) return;
-      if (apiAvailable) {
-        try {
-          const response = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ titulo: title }) });
-          if (!response.ok) throw new Error('Não foi possível criar a tarefa');
-          tasks.push(await response.json());
-        } catch (error) {
-          setApiStatus(false);
-          tasks.push({ id: Date.now(), titulo: title, concluida: false });
-        }
-      } else tasks.push({ id: Date.now(), titulo: title, concluida: false });
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ titulo: title })
+        });
+        if (!response.ok) throw new Error('Não foi possível criar a tarefa');
+        tasks.push(await response.json());
+        setApiStatus(true);
+      } catch (error) {
+        setApiStatus(false);
+        tasks.push({ id: Date.now(), titulo: title, concluida: false });
+      }
       input.value = ''; save(); render();
     });
 
@@ -204,12 +207,12 @@
       const toggleId = event.target.dataset.toggle;
       const deleteId = event.target.dataset.delete;
       if (toggleId) {
-        const task = tasks.find((item) => item.id === Number(toggleId));
+        const task = tasks.find((item) => String(item._id || item.id) === String(toggleId));
         if (task) {
           const concluida = !task.concluida;
           if (apiAvailable) {
             try {
-              const response = await fetch(`${API_URL}/${task.id}`, {
+              const response = await fetch(`${API_URL}/${task._id || task.id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ titulo: task.titulo, concluida })
@@ -232,7 +235,7 @@
             setApiStatus(false);
           }
         }
-        tasks = tasks.filter((item) => item.id !== Number(deleteId));
+        tasks = tasks.filter((item) => String(item._id || item.id) !== String(deleteId));
       }
       save(); render();
     });
