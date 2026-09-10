@@ -8,15 +8,63 @@
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
 
     :root {
-      --ink: #202d32;
-      --muted: #718085;
-      --paper: #f6f8f5;
-      --surface: #ffffff;
-      --line: #dfe7e4;
-      --mint: #bfe8d5;
-      --mint-strong: #2c9b70;
-      --coral: #ef806c;
-      --shadow: 0 18px 55px rgba(43, 69, 61, .09);
+      --ink: #172b2b;
+      --muted: #6c7d7c;
+      --paper: #edf4f0;
+      --surface: rgba(255, 255, 255, .82);
+      --surface-solid: #ffffff;
+      --line: #d8e5df;
+      --accent: #17866a;
+      --accent-soft: #d1eee2;
+      --accent-contrast: #ffffff;
+      --danger: #d15c55;
+      --shadow: 0 26px 70px rgba(26, 64, 53, .13);
+      --hero: linear-gradient(135deg, #d8f0e4 0%, #edf4f0 52%, #f8f1df 100%);
+    }
+
+    body[data-theme="night"] {
+      --ink: #e9f1ee;
+      --muted: #99aaa7;
+      --paper: #101b1d;
+      --surface: rgba(27, 43, 44, .88);
+      --surface-solid: #1b2b2c;
+      --line: #304547;
+      --accent: #5fd0a4;
+      --accent-soft: #204d43;
+      --accent-contrast: #09241d;
+      --danger: #f18a7e;
+      --shadow: 0 26px 70px rgba(0, 0, 0, .24);
+      --hero: linear-gradient(135deg, #1d3937 0%, #101b1d 58%, #332d23 100%);
+    }
+
+    body[data-theme="ocean"] {
+      --ink: #102b3b;
+      --muted: #66808e;
+      --paper: #eaf3f7;
+      --surface: rgba(255, 255, 255, .84);
+      --surface-solid: #ffffff;
+      --line: #d0e1e9;
+      --accent: #187b9d;
+      --accent-soft: #d2edf4;
+      --accent-contrast: #ffffff;
+      --danger: #c95f61;
+      --shadow: 0 26px 70px rgba(28, 76, 97, .14);
+      --hero: linear-gradient(135deg, #d3eef4 0%, #eaf3f7 58%, #f8ebdf 100%);
+    }
+
+    body[data-theme="clay"] {
+      --ink: #3a2926;
+      --muted: #927974;
+      --paper: #f6eeea;
+      --surface: rgba(255, 252, 249, .86);
+      --surface-solid: #fffaf7;
+      --line: #ead9d0;
+      --accent: #b8664d;
+      --accent-soft: #f4ddd2;
+      --accent-contrast: #ffffff;
+      --danger: #a84d55;
+      --shadow: 0 26px 70px rgba(112, 65, 49, .13);
+      --hero: linear-gradient(135deg, #f4dfd3 0%, #f6eeea 58%, #f7e9b9 100%);
     }
 
     * { box-sizing: border-box; }
@@ -26,82 +74,142 @@
       color: var(--ink);
       background: var(--paper);
       font-family: 'DM Sans', sans-serif;
+      transition: color .25s ease, background .25s ease;
     }
     body::before {
       content: '';
       position: fixed;
       inset: 0 0 auto;
-      height: 340px;
+      height: 390px;
       z-index: -1;
-      background: linear-gradient(125deg, #d9f0e2 0%, #f6f8f5 62%);
+      background: var(--hero);
+      transition: background .25s ease;
     }
-    .shell { width: min(1080px, calc(100% - 36px)); margin: 0 auto; padding: 44px 0 64px; }
-    header { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; margin-bottom: 42px; }
-    .eyebrow { margin: 0 0 12px; color: var(--mint-strong); font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
-    h1, h2 { font-family: 'Space Grotesk', sans-serif; letter-spacing: -.04em; }
-    h1 { max-width: 580px; margin: 0; font-size: clamp(2.45rem, 7vw, 5rem); line-height: .98; }
-    .subtitle { max-width: 540px; margin: 18px 0 0; color: var(--muted); font-size: 1.05rem; line-height: 1.55; }
-    .api-status { display: flex; align-items: center; gap: 9px; padding: 10px 14px; border: 1px solid rgba(44,155,112,.2); border-radius: 99px; color: var(--mint-strong); background: rgba(255,255,255,.65); font-size: .82rem; font-weight: 600; white-space: nowrap; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mint-strong); box-shadow: 0 0 0 4px rgba(44,155,112,.12); }
-    .layout { display: grid; grid-template-columns: 310px 1fr; gap: 24px; align-items: start; }
-    .panel, .task-area { border: 1px solid rgba(223,231,228,.9); border-radius: 18px; background: rgba(255,255,255,.82); box-shadow: var(--shadow); }
-    .panel { padding: 24px; }
-    .panel h2 { margin: 0 0 20px; font-size: 1.2rem; }
-    .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 26px; }
-    .stat { padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
-    .stat strong { display: block; font-family: 'Space Grotesk', sans-serif; font-size: 1.65rem; }
-    .stat span { color: var(--muted); font-size: .78rem; }
+    body::after {
+      content: '';
+      position: fixed;
+      width: 360px;
+      height: 360px;
+      right: -140px;
+      bottom: -160px;
+      z-index: -1;
+      border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+      border-radius: 50%;
+      box-shadow: 0 0 0 36px color-mix(in srgb, var(--accent) 5%, transparent), 0 0 0 72px color-mix(in srgb, var(--accent) 3%, transparent);
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .shell { width: min(1120px, calc(100% - 40px)); margin: 0 auto; padding: 34px 0 72px; }
+    header { display: flex; justify-content: space-between; align-items: flex-start; gap: 30px; margin-bottom: 42px; animation: rise .6s ease both; }
+    .brand-row { display: flex; align-items: center; gap: 12px; margin-bottom: 25px; }
+    .brand-mark { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 11px; color: var(--accent-contrast); background: var(--accent); box-shadow: 0 8px 18px color-mix(in srgb, var(--accent) 28%, transparent); font-family: 'Space Grotesk', sans-serif; font-size: .95rem; font-weight: 700; }
+    .eyebrow { margin: 0; color: var(--accent); font-size: .72rem; font-weight: 700; letter-spacing: .17em; text-transform: uppercase; }
+    h1, h2 { font-family: 'Space Grotesk', sans-serif; letter-spacing: -.045em; }
+    h1 { max-width: 690px; margin: 0; font-size: clamp(2.7rem, 7vw, 5.8rem); line-height: .94; }
+    h1 span { color: var(--accent); }
+    .subtitle { max-width: 540px; margin: 20px 0 0; color: var(--muted); font-size: 1rem; line-height: 1.6; }
+    .header-tools { display: grid; justify-items: end; gap: 16px; }
+    .api-status { display: flex; align-items: center; gap: 9px; padding: 10px 14px; border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line)); border-radius: 999px; color: var(--accent); background: var(--surface); font-size: .78rem; font-weight: 700; white-space: nowrap; box-shadow: 0 8px 20px color-mix(in srgb, var(--ink) 5%, transparent); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 15%, transparent); }
+    .theme-switcher { display: flex; align-items: center; gap: 9px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: 0 8px 20px color-mix(in srgb, var(--ink) 4%, transparent); }
+    .theme-label { margin-right: 3px; color: var(--muted); font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; }
+    .theme-button { width: 24px; height: 24px; padding: 0; border: 2px solid transparent; border-radius: 50%; transition: transform .2s, border-color .2s; }
+    .theme-button:hover { transform: scale(1.13); }
+    .theme-button.active { border-color: var(--ink); box-shadow: 0 0 0 2px var(--surface-solid); }
+    .theme-button[data-theme-choice="aurora"] { background: linear-gradient(135deg, #17866a 50%, #f0d79b 50%); }
+    .theme-button[data-theme-choice="night"] { background: linear-gradient(135deg, #5fd0a4 50%, #101b1d 50%); }
+    .theme-button[data-theme-choice="ocean"] { background: linear-gradient(135deg, #187b9d 50%, #eaf3f7 50%); }
+    .theme-button[data-theme-choice="clay"] { background: linear-gradient(135deg, #b8664d 50%, #f7e9b9 50%); }
+    .layout { display: grid; grid-template-columns: 310px 1fr; gap: 22px; align-items: start; }
+    .panel, .task-area { border: 1px solid color-mix(in srgb, var(--line) 88%, transparent); border-radius: 24px; background: var(--surface); box-shadow: var(--shadow); backdrop-filter: blur(16px); }
+    .panel { padding: 25px; animation: rise .65s .08s ease both; }
+    .panel-header { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 20px; }
+    .panel h2, .toolbar h2 { margin: 0; font-size: 1.2rem; }
+    .section-kicker { color: var(--muted); font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 28px; }
+    .stat { padding: 15px; border: 1px solid var(--line); border-radius: 16px; background: color-mix(in srgb, var(--surface-solid) 72%, transparent); }
+    .stat strong { display: block; margin-bottom: 2px; font-family: 'Space Grotesk', sans-serif; font-size: 1.7rem; }
+    .stat span { color: var(--muted); font-size: .75rem; }
     .new-task { display: grid; gap: 10px; }
-    label { color: var(--muted); font-size: .78rem; font-weight: 600; }
-    input { width: 100%; padding: 13px 14px; border: 1px solid var(--line); border-radius: 10px; outline: none; color: var(--ink); background: var(--surface); font: inherit; }
-    input:focus { border-color: var(--mint-strong); box-shadow: 0 0 0 3px rgba(44,155,112,.12); }
-    button { border: 0; border-radius: 10px; padding: 13px 16px; cursor: pointer; font: inherit; font-weight: 700; transition: transform .2s, box-shadow .2s, background .2s; }
+    label { color: var(--muted); font-size: .76rem; font-weight: 700; }
+    input { width: 100%; padding: 14px 15px; border: 1px solid var(--line); border-radius: 13px; outline: none; color: var(--ink); background: var(--surface-solid); font-size: .92rem; transition: border-color .2s, box-shadow .2s; }
+    input::placeholder { color: color-mix(in srgb, var(--muted) 70%, transparent); }
+    input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent); }
+    button { border: 0; }
+    button:focus-visible, input:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 40%, transparent); outline-offset: 2px; }
     button:hover { transform: translateY(-1px); }
-    .primary { color: #fff; background: var(--ink); box-shadow: 0 7px 16px rgba(32,45,50,.18); }
-    .primary:hover { background: #31444a; }
-    .task-area { min-height: 476px; padding: 24px 26px; }
-    .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
-    .toolbar h2 { margin: 0; font-size: 1.35rem; }
-    .filters { display: flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); }
-    .filter { padding: 7px 10px; color: var(--muted); background: transparent; font-size: .78rem; }
-    .filter.active { color: var(--ink); background: var(--surface); box-shadow: 0 2px 8px rgba(43,69,61,.08); }
-    #task-list { display: grid; gap: 10px; margin-top: 20px; }
-    .task { display: flex; align-items: center; gap: 13px; padding: 15px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); animation: appear .35s both; }
-    .check { display: grid; flex: 0 0 23px; width: 23px; height: 23px; padding: 0; place-items: center; border: 1.5px solid #b7c8c1; border-radius: 50%; color: transparent; background: transparent; font-size: .8rem; }
-    .task.done .check { border-color: var(--mint-strong); color: white; background: var(--mint-strong); }
-    .task-title { flex: 1; margin: 0; font-weight: 600; }
-    .task.done .task-title { color: #9aa9a5; text-decoration: line-through; }
-    .delete { padding: 7px 9px; color: var(--muted); background: transparent; font-size: 1rem; }
-    .delete:hover { color: var(--coral); background: #fff1ee; }
-    .empty { padding: 70px 20px; color: var(--muted); text-align: center; }
+    .primary { display: flex; justify-content: center; align-items: center; gap: 8px; padding: 14px 16px; border-radius: 13px; color: var(--accent-contrast); background: var(--accent); box-shadow: 0 10px 22px color-mix(in srgb, var(--accent) 24%, transparent); font-weight: 700; transition: transform .2s, box-shadow .2s, filter .2s; }
+    .primary:hover { filter: brightness(1.06); box-shadow: 0 13px 27px color-mix(in srgb, var(--accent) 30%, transparent); }
+    .primary .plus { font-size: 1.2rem; line-height: 0; }
+    .hint { margin: 22px 0 0; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: .73rem; line-height: 1.55; }
+    .hint strong { color: var(--ink); font-weight: 700; }
+    .task-area { min-height: 520px; padding: 26px 28px; animation: rise .7s .15s ease both; }
+    .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding-bottom: 22px; border-bottom: 1px solid var(--line); }
+    .toolbar-title { display: flex; align-items: baseline; gap: 10px; }
+    .task-count { color: var(--muted); font-size: .77rem; font-weight: 700; }
+    .filters { display: flex; gap: 3px; padding: 4px; border: 1px solid var(--line); border-radius: 13px; background: color-mix(in srgb, var(--paper) 80%, transparent); }
+    .filter { padding: 8px 11px; border-radius: 9px; color: var(--muted); background: transparent; font-size: .75rem; font-weight: 700; transition: background .2s, color .2s, box-shadow .2s; }
+    .filter.active { color: var(--ink); background: var(--surface-solid); box-shadow: 0 3px 10px color-mix(in srgb, var(--ink) 8%, transparent); }
+    #task-list { display: grid; gap: 11px; margin-top: 22px; }
+    .task { display: flex; align-items: center; gap: 13px; min-height: 67px; padding: 14px 15px; border: 1px solid var(--line); border-radius: 16px; background: color-mix(in srgb, var(--surface-solid) 76%, transparent); animation: appear .35s both; transition: border-color .2s, box-shadow .2s, transform .2s; }
+    .task:hover { border-color: color-mix(in srgb, var(--accent) 42%, var(--line)); box-shadow: 0 8px 22px color-mix(in srgb, var(--ink) 6%, transparent); transform: translateY(-1px); }
+    .check { display: grid; flex: 0 0 25px; width: 25px; height: 25px; padding: 0; place-items: center; border: 1.5px solid color-mix(in srgb, var(--muted) 46%, var(--line)); border-radius: 50%; color: transparent; background: transparent; font-size: .8rem; transition: background .2s, border-color .2s, color .2s; }
+    .task.done .check { border-color: var(--accent); color: var(--accent-contrast); background: var(--accent); }
+    .task-title { flex: 1; margin: 0; color: var(--ink); font-size: .9rem; font-weight: 600; line-height: 1.4; }
+    .task.done .task-title { color: var(--muted); text-decoration: line-through; }
+    .delete { display: grid; width: 30px; height: 30px; padding: 0; place-items: center; border-radius: 9px; color: var(--muted); background: transparent; font-size: 1.2rem; transition: color .2s, background .2s; }
+    .delete:hover { color: var(--danger); background: color-mix(in srgb, var(--danger) 11%, transparent); }
+    .empty { padding: 78px 20px; color: var(--muted); text-align: center; }
+    .empty-icon { display: grid; width: 48px; height: 48px; margin: 0 auto 17px; place-items: center; border: 1px solid var(--line); border-radius: 15px; color: var(--accent); background: var(--accent-soft); font-size: 1.35rem; }
     .empty strong { display: block; margin-bottom: 7px; color: var(--ink); font-family: 'Space Grotesk'; font-size: 1.15rem; }
-    .hint { margin: 24px 0 0; color: var(--muted); font-size: .75rem; line-height: 1.5; }
     @keyframes appear { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
     @media (max-width: 760px) {
-      .shell { padding-top: 28px; }
+      .shell { width: min(100% - 28px, 560px); padding-top: 24px; }
       header { display: block; margin-bottom: 30px; }
-      .api-status { display: inline-flex; margin-top: 22px; }
+      .header-tools { justify-items: start; margin-top: 25px; }
       .layout { grid-template-columns: 1fr; }
       .toolbar { align-items: flex-start; flex-direction: column; }
       .filters { width: 100%; }
       .filter { flex: 1; }
+      .task-area { padding: 22px 18px; }
+    }
+    @media (max-width: 430px) {
+      h1 { font-size: 3rem; }
+      .panel { padding: 21px; }
+      .theme-label { display: none; }
     }
   </style>
 </head>
-<body>
+<body data-theme="aurora">
   <main class="shell">
     <header>
       <div>
-        <p class="eyebrow">To-do API / painel</p>
-        <h1>Menos abas.<br />Mais feito.</h1>
-        <p class="subtitle">Uma visão simples para acompanhar suas tarefas, testar a API e manter o dia em movimento.</p>
+        <div class="brand-row">
+          <span class="brand-mark">✓</span>
+          <p class="eyebrow">To-do API / painel</p>
+        </div>
+        <h1>Menos abas.<br /><span>Mais efeito.</span></h1>
+        <p class="subtitle">Uma visão clara para organizar o que importa, acompanhar o ritmo e terminar o dia com menos ruído.</p>
       </div>
-      <div class="api-status"><span class="dot"></span><span id="status-text">Modo demonstração</span></div>
+      <div class="header-tools">
+        <div class="api-status"><span class="dot"></span><span id="status-text">Modo demonstração</span></div>
+        <div class="theme-switcher" aria-label="Escolher tema">
+          <span class="theme-label">Tema</span>
+          <button class="theme-button active" type="button" data-theme-choice="aurora" aria-label="Tema Aurora" title="Tema Aurora"></button>
+          <button class="theme-button" type="button" data-theme-choice="night" aria-label="Tema Noturno" title="Tema Noturno"></button>
+          <button class="theme-button" type="button" data-theme-choice="ocean" aria-label="Tema Oceano" title="Tema Oceano"></button>
+          <button class="theme-button" type="button" data-theme-choice="clay" aria-label="Tema Terracota" title="Tema Terracota"></button>
+        </div>
+      </div>
     </header>
 
     <section class="layout">
       <aside class="panel">
-        <h2>Resumo</h2>
+        <div class="panel-header">
+          <h2>Resumo</h2>
+          <span class="section-kicker">Hoje</span>
+        </div>
         <div class="stats">
           <div class="stat"><strong id="total">0</strong><span>Total</span></div>
           <div class="stat"><strong id="pending">0</strong><span>Pendentes</span></div>
@@ -111,14 +219,14 @@
         <form class="new-task" id="task-form">
           <label for="title">Nova tarefa</label>
           <input id="title" name="title" placeholder="O que precisa ser feito?" autocomplete="off" required />
-          <button class="primary" type="submit">Adicionar tarefa</button>
+          <button class="primary" type="submit"><span class="plus">+</span> Adicionar tarefa</button>
         </form>
-        <p class="hint">Os dados ficam neste navegador em modo demonstração. O painel tenta usar sua API em <strong>localhost:3000</strong> quando ela estiver disponível.</p>
+        <p class="hint">As tarefas são sincronizadas com a API em <strong>localhost:3000</strong> quando ela está disponível.</p>
       </aside>
 
       <section class="task-area">
         <div class="toolbar">
-          <h2>Minhas tarefas</h2>
+          <div class="toolbar-title"><h2>Minhas tarefas</h2><span class="task-count" id="task-count">0 itens</span></div>
           <div class="filters" aria-label="Filtros de tarefas">
             <button class="filter active" data-filter="all">Todas</button>
             <button class="filter" data-filter="pending">Pendentes</button>
@@ -140,6 +248,15 @@
     let tasks = JSON.parse(localStorage.getItem('todo-api-tasks') || 'null') || demoTasks;
     let currentFilter = 'all';
     let apiAvailable = false;
+    const savedTheme = localStorage.getItem('todo-api-theme') || 'aurora';
+
+    function setTheme(theme) {
+      document.body.dataset.theme = theme;
+      localStorage.setItem('todo-api-theme', theme);
+      document.querySelectorAll('.theme-button').forEach((button) => {
+        button.classList.toggle('active', button.dataset.themeChoice === theme);
+      });
+    }
 
     const save = () => localStorage.setItem('todo-api-tasks', JSON.stringify(tasks));
     const setApiStatus = (connected) => {
@@ -155,6 +272,7 @@
       document.querySelector('#pending').textContent = tasks.length - completed;
       document.querySelector('#done').textContent = completed;
       document.querySelector('#progress').textContent = tasks.length ? Math.round(completed / tasks.length * 100) + '%' : '0%';
+      document.querySelector('#task-count').textContent = `${tasks.length} ${tasks.length === 1 ? 'item' : 'itens'}`;
       const list = document.querySelector('#task-list');
       const filtered = visibleTasks();
       list.innerHTML = filtered.length ? filtered.map((task) => `
@@ -162,7 +280,7 @@
           <button class="check" data-toggle="${task._id || task.id}" aria-label="Alternar tarefa">✓</button>
           <p class="task-title">${escapeHtml(task.titulo)}</p>
           <button class="delete" data-delete="${task._id || task.id}" aria-label="Excluir tarefa">×</button>
-        </article>`).join('') : '<div class="empty"><strong>Nada por aqui ainda.</strong>Adicione uma tarefa ou troque o filtro.</div>';
+        </article>`).join('') : '<div class="empty"><div class="empty-icon">✓</div><strong>Nada por aqui ainda.</strong>Adicione uma tarefa ou troque o filtro.</div>';
     }
 
     function escapeHtml(value) {
@@ -246,6 +364,11 @@
       render();
     }));
 
+    document.querySelectorAll('.theme-button').forEach((button) => button.addEventListener('click', () => {
+      setTheme(button.dataset.themeChoice);
+    }));
+
+    setTheme(savedTheme);
     render();
     tryApi();
   </script>
