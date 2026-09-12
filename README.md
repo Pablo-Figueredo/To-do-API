@@ -37,6 +37,15 @@ Versão 0.4 — Integração com banco de dados
 * [x] Atualização do controller para salvar e consultar tarefas no banco
 * [x] Persistência das tarefas mesmo após reiniciar o servidor
 
+Versão 0.5 — Padronização do tratamento de erros
+
+* [x] Correção dos imports e nomes das classes de erro para manter a estrutura consistente
+* [x] Ajuste do middleware de erros para responder corretamente a validações, requisições inválidas e casos de não encontrado
+* [x] Centralização da base dos erros em `ErroBase` para padronizar as respostas da API
+* [x] Correção da variável do catch no controller para garantir que a mensagem da exceção seja tratada corretamente
+
+Com esses ajustes, a API passou a responder de forma mais consistente quando ocorrem erros de validação, requisição ou ausência de recurso, mantendo o comportamento esperado para o CRUD de tarefas.
+
 Para proteger os dados de conexão, a aplicação utiliza um arquivo `.env` com a variável `STRING_CONEXAO_DB`:
 
 ```env
