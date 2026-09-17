@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import routes from './routes.js';
+import routes from './routes/index.js';
 import db from './config/dbConnect.js';
 import manipulador404 from './middleware/Manipulador404.js';
 import manipuladorDeErros from './middleware/manipuladorDeErros.js';
@@ -19,7 +19,7 @@ const currentDirectory = path.dirname(currentFile);
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(currentDirectory, '../frontend')));
-app.use(routes);
+routes(app);
 
 app.use(manipulador404);
  

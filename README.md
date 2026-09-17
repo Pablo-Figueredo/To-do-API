@@ -1,66 +1,78 @@
- API de Lista de Tarefas
+# UserControl API
 
-Projeto de uma API REST para gerenciamento de tarefas, desenvolvido com Node.js e Express.
+API de estudo para gerenciamento de tarefas associadas a usuarios, com autenticacao, JWT e controle de acesso por roles.
 
- Desenvolvimento
+## Como funciona
 
- Versão 0.1 — Estrutura inicial
+O fluxo principal e:
 
-* [x] Inicialização do projeto
-* [x] Configuração do Express
-* [x] Criação do servidor
-* [x] Criação das rotas do CRUD
-
- Versão 0.2 — Funcionalidades
-
-Implementar as funcionalidades das rotas criadas:
-
-* [x] Adicionar tarefas
-* [x] Listar/visualizar tarefas
-* [x] Atualizar tarefas
-* [x] Deletar tarefas
-
-versão 0.3 — Refatoração do código
-
-Refatorar o código para uma melhor organização:
-
-* [x] Separação do código em rotas, controller e model
-* [x] Criação do `TarefaController` para organizar as ações das rotas
-* [x] Criação do model `Tarefa` com as operações de criar, listar, atualizar e remover tarefas
-
-Versão 0.4 — Integração com banco de dados
-
-* [x] Instalação do MongoDB e do Mongoose
-* [x] Configuração da variável de ambiente para a conexão com o banco
-* [x] Criação do arquivo de conexão com o MongoDB
-* [x] Alteração do model `Tarefa` para utilizar o Mongoose
-* [x] Atualização do controller para salvar e consultar tarefas no banco
-* [x] Persistência das tarefas mesmo após reiniciar o servidor
-
-Versão 0.5 — Padronização do tratamento de erros
-
-* [x] Correção dos imports e nomes das classes de erro para manter a estrutura consistente
-* [x] Ajuste do middleware de erros para responder corretamente a validações, requisições inválidas e casos de não encontrado
-* [x] Centralização da base dos erros em `ErroBase` para padronizar as respostas da API
-* [x] Correção da variável do catch no controller para garantir que a mensagem da exceção seja tratada corretamente
-
-Com esses ajustes, a API passou a responder de forma mais consistente quando ocorrem erros de validação, requisição ou ausência de recurso, mantendo o comportamento esperado para o CRUD de tarefas.
-
-Para proteger os dados de conexão, a aplicação utiliza um arquivo `.env` com a variável `STRING_CONEXAO_DB`:
-
-```env
-STRING_CONEXAO_DB=sua_string_de_conexao
+```text
+Frontend -> API Express -> MongoDB
 ```
 
-A conexão é feita pelo arquivo `src/config/dbConnect.js`. O Mongoose é responsável por criar, consultar, atualizar e remover os documentos da coleção de tarefas.
+O usuario cria uma conta, faz login e recebe um token JWT. Esse token identifica quem esta fazendo cada requisicao. As tarefas sao vinculadas ao ID do usuario autenticado, por isso cada pessoa acessa somente as proprias tarefas.
 
-O model `Tarefa` define os campos `titulo` e `concluida`. O campo `titulo` é obrigatório e `concluida` começa como `false` por padrão.
+As senhas sao armazenadas com bcrypt e nunca sao devolvidas nas respostas da API.
 
-As rotas continuam seguindo o CRUD da API:
+## Usuarios e roles
 
-* `POST /tarefa` — cria e salva uma tarefa
-* `GET /tarefa` — lista as tarefas salvas
-* `PUT /tarefa/:id` — atualiza uma tarefa pelo seu identificador
-* `DELETE /tarefa/:id` — remove uma tarefa pelo seu identificador
+Cada usuario possui um `role`:
 
-Agora os dados não ficam mais apenas na memória da aplicação. Eles são armazenados no MongoDB e continuam disponíveis depois que o servidor é reiniciado.
+- `user`: pode criar, listar, atualizar e excluir somente as proprias tarefas.
+- `admin`: pode acessar a area administrativa e gerenciar usuarios.
+
+Novos usuarios sempre entram como `user`. O acesso administrativo e controlado no backend por middleware, e nao apenas pela interface. O frontend usa o role para mostrar ou esconder a aba de administracao, mas a protecao real esta nas rotas da API.
+
+## Autenticacao
+
+O cadastro acontece em:
+
+```http
+POST /user
+```
+
+O login acontece em:
+
+```http
+POST /user/login
+```
+
+Depois do login, o frontend envia o token nas requisicoes protegidas:
+
+```http
+Authorization: Bearer <token>
+```
+
+O backend valida o token, identifica o usuario e aplica as permissoes correspondentes.
+
+## Tarefas
+
+As rotas de tarefas exigem autenticacao:
+
+- `GET /tarefa` lista as tarefas do usuario logado.
+- `POST /tarefa` cria uma tarefa vinculada ao usuario logado.
+- `PUT /tarefa/:id` atualiza uma tarefa propria.
+- `DELETE /tarefa/:id` exclui uma tarefa propria.
+
+Mesmo que alguem conheca o ID de uma tarefa, nao consegue alterar ou excluir uma tarefa pertencente a outro usuario.
+
+## Administracao
+
+As rotas de gerenciamento de usuarios exigem `role: "admin"`:
+
+- `GET /user` lista usuarios sem expor senhas.
+- `GET /user/:id` consulta um usuario.
+- `PUT /user/:id` atualiza um usuario.
+- `DELETE /user/:id` remove um usuario.
+
+Usuarios comuns recebem resposta `403` ao tentar acessar essas rotas.
+
+## Demonstracao offline
+
+O frontend possui um modo de demonstracao que nao depende da API nem do MongoDB. Ao escolher **Ver demonstracao**, tarefas e usuarios ficticios sao carregados e as alteracoes ficam salvas no `localStorage` do navegador.
+
+Esse modo existe apenas para apresentar a interface no GitHub. Ele nao representa uma autenticacao real e nao compartilha dados com o banco ou com outros usuarios.
+
+## Seguranca
+
+Credenciais do MongoDB e o segredo JWT ficam no backend, em variaveis de ambiente, e nao devem ser publicados no frontend ou no GitHub.

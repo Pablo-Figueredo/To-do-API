@@ -1,12 +1,11 @@
-import Tarefa from "../model/tarefa.js";
+import { Tarefa } from "../model/index.js";
 import NaoEncontrado from "../erros/NaoEncontrado.js";
 
 class TarefaController {
   static listarTarefas = async (req, res, next) => {
     try {
-      const tarefas = await Tarefa.find();
-      res.resultado(tarefas);
-      next();
+      const tarefas = await Tarefa.find({ user: req.usuario.id });
+      res.status(200).json(tarefas);
     } catch (erro) {
       next(new NaoEncontrado(erro.message));
     }
@@ -14,9 +13,9 @@ class TarefaController {
 
   static async listarTarefasPorId(req, res, next) {
     try {
-      const tarefas = await Tarefa.findById();
+      const tarefas = await Tarefa.findOne({ _id: req.params.id, user: req.usuario.id });
       if (tarefas !== null) {
-        res.resultado(tarefas);
+        res.status(200).json(tarefas);
       } else {
         next(new NaoEncontrado("Tarefa não encontrada"));
       }
@@ -28,9 +27,9 @@ class TarefaController {
   static async criarTarefa(req, res, next) {
     try {
       const { titulo } = req.body;
-      const novaTarefa = await Tarefa.create({ titulo });
+      const novaTarefa = await Tarefa.create({ titulo, user: req.usuario.id });
       if (novaTarefa !== null) {
-        res.resultado(novaTarefa);
+        res.status(201).json(novaTarefa);
       } else {
         next(new NaoEncontrado("Tarefa não criada"));
       }
@@ -43,8 +42,8 @@ class TarefaController {
     try {
       const id = req.params.id;
       const { titulo, concluida } = req.body;
-      const tarefaAtualizada = await Tarefa.findByIdAndUpdate(
-        id,
+      const tarefaAtualizada = await Tarefa.findOneAndUpdate(
+        { _id: id, user: req.usuario.id },
         { titulo, concluida },
         { new: true }
       );
@@ -61,7 +60,7 @@ class TarefaController {
   static async deletarTarefa(req, res, next) {
     try {
       const id = req.params.id;
-      const tarefa = await Tarefa.findByIdAndDelete(id);
+      const tarefa = await Tarefa.findOneAndDelete({ _id: id, user: req.usuario.id });
       if (tarefa !== null) {
         res.status(200).json({ message: "Tarefa deletada com sucesso" });
       } else {

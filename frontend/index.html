@@ -4,186 +4,42 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lista de tarefas</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
-
-    :root {
-      --ink: #172b2b;
-      --muted: #6c7d7c;
-      --paper: #edf4f0;
-      --surface: rgba(255, 255, 255, .82);
-      --surface-solid: #ffffff;
-      --line: #d8e5df;
-      --accent: #17866a;
-      --accent-soft: #d1eee2;
-      --accent-contrast: #ffffff;
-      --danger: #d15c55;
-      --shadow: 0 26px 70px rgba(26, 64, 53, .13);
-      --hero: linear-gradient(135deg, #d8f0e4 0%, #edf4f0 52%, #f8f1df 100%);
-    }
-
-    body[data-theme="night"] {
-      --ink: #e9f1ee;
-      --muted: #99aaa7;
-      --paper: #101b1d;
-      --surface: rgba(27, 43, 44, .88);
-      --surface-solid: #1b2b2c;
-      --line: #304547;
-      --accent: #5fd0a4;
-      --accent-soft: #204d43;
-      --accent-contrast: #09241d;
-      --danger: #f18a7e;
-      --shadow: 0 26px 70px rgba(0, 0, 0, .24);
-      --hero: linear-gradient(135deg, #1d3937 0%, #101b1d 58%, #332d23 100%);
-    }
-
-    body[data-theme="ocean"] {
-      --ink: #102b3b;
-      --muted: #66808e;
-      --paper: #eaf3f7;
-      --surface: rgba(255, 255, 255, .84);
-      --surface-solid: #ffffff;
-      --line: #d0e1e9;
-      --accent: #187b9d;
-      --accent-soft: #d2edf4;
-      --accent-contrast: #ffffff;
-      --danger: #c95f61;
-      --shadow: 0 26px 70px rgba(28, 76, 97, .14);
-      --hero: linear-gradient(135deg, #d3eef4 0%, #eaf3f7 58%, #f8ebdf 100%);
-    }
-
-    body[data-theme="clay"] {
-      --ink: #3a2926;
-      --muted: #927974;
-      --paper: #f6eeea;
-      --surface: rgba(255, 252, 249, .86);
-      --surface-solid: #fffaf7;
-      --line: #ead9d0;
-      --accent: #b8664d;
-      --accent-soft: #f4ddd2;
-      --accent-contrast: #ffffff;
-      --danger: #a84d55;
-      --shadow: 0 26px 70px rgba(112, 65, 49, .13);
-      --hero: linear-gradient(135deg, #f4dfd3 0%, #f6eeea 58%, #f7e9b9 100%);
-    }
-
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      color: var(--ink);
-      background: var(--paper);
-      font-family: 'DM Sans', sans-serif;
-      transition: color .25s ease, background .25s ease;
-    }
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0 0 auto;
-      height: 390px;
-      z-index: -1;
-      background: var(--hero);
-      transition: background .25s ease;
-    }
-    body::after {
-      content: '';
-      position: fixed;
-      width: 360px;
-      height: 360px;
-      right: -140px;
-      bottom: -160px;
-      z-index: -1;
-      border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
-      border-radius: 50%;
-      box-shadow: 0 0 0 36px color-mix(in srgb, var(--accent) 5%, transparent), 0 0 0 72px color-mix(in srgb, var(--accent) 3%, transparent);
-    }
-    button, input { font: inherit; }
-    button { cursor: pointer; }
-    .shell { width: min(1120px, calc(100% - 40px)); margin: 0 auto; padding: 34px 0 72px; }
-    header { display: flex; justify-content: space-between; align-items: flex-start; gap: 30px; margin-bottom: 42px; animation: rise .6s ease both; }
-    .brand-row { display: flex; align-items: center; gap: 12px; margin-bottom: 25px; }
-    .brand-mark { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 11px; color: var(--accent-contrast); background: var(--accent); box-shadow: 0 8px 18px color-mix(in srgb, var(--accent) 28%, transparent); font-family: 'Space Grotesk', sans-serif; font-size: .95rem; font-weight: 700; }
-    .eyebrow { margin: 0; color: var(--accent); font-size: .72rem; font-weight: 700; letter-spacing: .17em; text-transform: uppercase; }
-    h1, h2 { font-family: 'Space Grotesk', sans-serif; letter-spacing: -.045em; }
-    h1 { max-width: 690px; margin: 0; font-size: clamp(2.7rem, 7vw, 5.8rem); line-height: .94; }
-    h1 span { color: var(--accent); }
-    .subtitle { max-width: 540px; margin: 20px 0 0; color: var(--muted); font-size: 1rem; line-height: 1.6; }
-    .header-tools { display: grid; justify-items: end; gap: 16px; }
-    .api-status { display: flex; align-items: center; gap: 9px; padding: 10px 14px; border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line)); border-radius: 999px; color: var(--accent); background: var(--surface); font-size: .78rem; font-weight: 700; white-space: nowrap; box-shadow: 0 8px 20px color-mix(in srgb, var(--ink) 5%, transparent); }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 15%, transparent); }
-    .theme-switcher { display: flex; align-items: center; gap: 9px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: 0 8px 20px color-mix(in srgb, var(--ink) 4%, transparent); }
-    .theme-label { margin-right: 3px; color: var(--muted); font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; }
-    .theme-button { width: 24px; height: 24px; padding: 0; border: 2px solid transparent; border-radius: 50%; transition: transform .2s, border-color .2s; }
-    .theme-button:hover { transform: scale(1.13); }
-    .theme-button.active { border-color: var(--ink); box-shadow: 0 0 0 2px var(--surface-solid); }
-    .theme-button[data-theme-choice="aurora"] { background: linear-gradient(135deg, #17866a 50%, #f0d79b 50%); }
-    .theme-button[data-theme-choice="night"] { background: linear-gradient(135deg, #5fd0a4 50%, #101b1d 50%); }
-    .theme-button[data-theme-choice="ocean"] { background: linear-gradient(135deg, #187b9d 50%, #eaf3f7 50%); }
-    .theme-button[data-theme-choice="clay"] { background: linear-gradient(135deg, #b8664d 50%, #f7e9b9 50%); }
-    .layout { display: grid; grid-template-columns: 310px 1fr; gap: 22px; align-items: start; }
-    .panel, .task-area { border: 1px solid color-mix(in srgb, var(--line) 88%, transparent); border-radius: 24px; background: var(--surface); box-shadow: var(--shadow); backdrop-filter: blur(16px); }
-    .panel { padding: 25px; animation: rise .65s .08s ease both; }
-    .panel-header { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 20px; }
-    .panel h2, .toolbar h2 { margin: 0; font-size: 1.2rem; }
-    .section-kicker { color: var(--muted); font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-    .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 28px; }
-    .stat { padding: 15px; border: 1px solid var(--line); border-radius: 16px; background: color-mix(in srgb, var(--surface-solid) 72%, transparent); }
-    .stat strong { display: block; margin-bottom: 2px; font-family: 'Space Grotesk', sans-serif; font-size: 1.7rem; }
-    .stat span { color: var(--muted); font-size: .75rem; }
-    .new-task { display: grid; gap: 10px; }
-    label { color: var(--muted); font-size: .76rem; font-weight: 700; }
-    input { width: 100%; padding: 14px 15px; border: 1px solid var(--line); border-radius: 13px; outline: none; color: var(--ink); background: var(--surface-solid); font-size: .92rem; transition: border-color .2s, box-shadow .2s; }
-    input::placeholder { color: color-mix(in srgb, var(--muted) 70%, transparent); }
-    input:focus { border-color: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent); }
-    button { border: 0; }
-    button:focus-visible, input:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 40%, transparent); outline-offset: 2px; }
-    button:hover { transform: translateY(-1px); }
-    .primary { display: flex; justify-content: center; align-items: center; gap: 8px; padding: 14px 16px; border-radius: 13px; color: var(--accent-contrast); background: var(--accent); box-shadow: 0 10px 22px color-mix(in srgb, var(--accent) 24%, transparent); font-weight: 700; transition: transform .2s, box-shadow .2s, filter .2s; }
-    .primary:hover { filter: brightness(1.06); box-shadow: 0 13px 27px color-mix(in srgb, var(--accent) 30%, transparent); }
-    .primary .plus { font-size: 1.2rem; line-height: 0; }
-    .hint { margin: 22px 0 0; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: .73rem; line-height: 1.55; }
-    .hint strong { color: var(--ink); font-weight: 700; }
-    .task-area { min-height: 520px; padding: 26px 28px; animation: rise .7s .15s ease both; }
-    .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding-bottom: 22px; border-bottom: 1px solid var(--line); }
-    .toolbar-title { display: flex; align-items: baseline; gap: 10px; }
-    .task-count { color: var(--muted); font-size: .77rem; font-weight: 700; }
-    .filters { display: flex; gap: 3px; padding: 4px; border: 1px solid var(--line); border-radius: 13px; background: color-mix(in srgb, var(--paper) 80%, transparent); }
-    .filter { padding: 8px 11px; border-radius: 9px; color: var(--muted); background: transparent; font-size: .75rem; font-weight: 700; transition: background .2s, color .2s, box-shadow .2s; }
-    .filter.active { color: var(--ink); background: var(--surface-solid); box-shadow: 0 3px 10px color-mix(in srgb, var(--ink) 8%, transparent); }
-    #task-list { display: grid; gap: 11px; margin-top: 22px; }
-    .task { display: flex; align-items: center; gap: 13px; min-height: 67px; padding: 14px 15px; border: 1px solid var(--line); border-radius: 16px; background: color-mix(in srgb, var(--surface-solid) 76%, transparent); animation: appear .35s both; transition: border-color .2s, box-shadow .2s, transform .2s; }
-    .task:hover { border-color: color-mix(in srgb, var(--accent) 42%, var(--line)); box-shadow: 0 8px 22px color-mix(in srgb, var(--ink) 6%, transparent); transform: translateY(-1px); }
-    .check { display: grid; flex: 0 0 25px; width: 25px; height: 25px; padding: 0; place-items: center; border: 1.5px solid color-mix(in srgb, var(--muted) 46%, var(--line)); border-radius: 50%; color: transparent; background: transparent; font-size: .8rem; transition: background .2s, border-color .2s, color .2s; }
-    .task.done .check { border-color: var(--accent); color: var(--accent-contrast); background: var(--accent); }
-    .task-title { flex: 1; margin: 0; color: var(--ink); font-size: .9rem; font-weight: 600; line-height: 1.4; }
-    .task.done .task-title { color: var(--muted); text-decoration: line-through; }
-    .delete { display: grid; width: 30px; height: 30px; padding: 0; place-items: center; border-radius: 9px; color: var(--muted); background: transparent; font-size: 1.2rem; transition: color .2s, background .2s; }
-    .delete:hover { color: var(--danger); background: color-mix(in srgb, var(--danger) 11%, transparent); }
-    .empty { padding: 78px 20px; color: var(--muted); text-align: center; }
-    .empty-icon { display: grid; width: 48px; height: 48px; margin: 0 auto 17px; place-items: center; border: 1px solid var(--line); border-radius: 15px; color: var(--accent); background: var(--accent-soft); font-size: 1.35rem; }
-    .empty strong { display: block; margin-bottom: 7px; color: var(--ink); font-family: 'Space Grotesk'; font-size: 1.15rem; }
-    @keyframes appear { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
-    @media (max-width: 760px) {
-      .shell { width: min(100% - 28px, 560px); padding-top: 24px; }
-      header { display: block; margin-bottom: 30px; }
-      .header-tools { justify-items: start; margin-top: 25px; }
-      .layout { grid-template-columns: 1fr; }
-      .toolbar { align-items: flex-start; flex-direction: column; }
-      .filters { width: 100%; }
-      .filter { flex: 1; }
-      .task-area { padding: 22px 18px; }
-    }
-    @media (max-width: 430px) {
-      h1 { font-size: 3rem; }
-      .panel { padding: 21px; }
-      .theme-label { display: none; }
-    }
-  </style>
+  <link rel="stylesheet" href="./style.css" />
 </head>
 <body data-theme="aurora">
   <main class="shell">
-    <header>
+    <section class="login-screen" id="login-screen" aria-labelledby="login-title">
+      <div class="login-mark">✓</div>
+      <p class="eyebrow">To-do API / acesso</p>
+      <h1 id="login-title">Entre para ver<br /><span>suas tarefas.</span></h1>
+      <p class="subtitle">Cada conta tem seu próprio espaço. Use o e-mail e a senha cadastrados na API.</p>
+      <div class="access-tabs" role="tablist" aria-label="Acesso à aplicação">
+        <button class="access-tab active" id="login-tab" type="button" role="tab" aria-selected="true">Entrar</button>
+        <button class="access-tab" id="register-tab" type="button" role="tab" aria-selected="false">Criar usuário</button>
+      </div>
+      <form class="login-form" id="login-form">
+        <label for="login-email">E-mail</label>
+        <input id="login-email" name="email" type="email" placeholder="voce@email.com" autocomplete="email" required />
+        <label for="login-password">Senha</label>
+        <input id="login-password" name="senha" type="password" placeholder="Sua senha" autocomplete="current-password" required />
+        <button class="primary" type="submit">Entrar</button>
+        <button class="demo-button" id="demo-login" type="button">Ver demonstração</button>
+        <p class="demo-note">A demonstração funciona sem banco de dados e salva os dados apenas neste navegador.</p>
+        <p class="form-message" id="login-message" role="alert"></p>
+      </form>
+      <form class="login-form" id="register-form" hidden>
+        <label for="register-name">Nome</label>
+        <input id="register-name" name="nome" type="text" placeholder="Seu nome" autocomplete="name" required />
+        <label for="register-email">E-mail</label>
+        <input id="register-email" name="email" type="email" placeholder="voce@email.com" autocomplete="email" required />
+        <label for="register-password">Senha</label>
+        <input id="register-password" name="senha" type="password" placeholder="Crie uma senha" autocomplete="new-password" required />
+        <button class="primary" type="submit">Cadastrar usuário</button>
+        <p class="form-message" id="register-message" role="alert"></p>
+      </form>
+    </section>
+
+    <header class="app-view">
       <div>
         <div class="brand-row">
           <span class="brand-mark">✓</span>
@@ -194,6 +50,7 @@
       </div>
       <div class="header-tools">
         <div class="api-status"><span class="dot"></span><span id="status-text">Modo demonstração</span></div>
+        <div class="account-tools"><span id="logged-user"></span><button class="admin-tab" id="admin-tab" type="button" hidden>Administração</button><button class="logout-button" id="logout-button" type="button">Sair</button></div>
         <div class="theme-switcher" aria-label="Escolher tema">
           <span class="theme-label">Tema</span>
           <button class="theme-button active" type="button" data-theme-choice="aurora" aria-label="Tema Aurora" title="Tema Aurora"></button>
@@ -204,7 +61,7 @@
       </div>
     </header>
 
-    <section class="layout">
+    <section class="layout app-view" id="task-view">
       <aside class="panel">
         <div class="panel-header">
           <h2>Resumo</h2>
@@ -236,141 +93,22 @@
         <div id="task-list"></div>
       </section>
     </section>
+
+    <section class="users-area app-view" id="admin-panel" aria-labelledby="users-title" hidden>
+      <div class="toolbar users-toolbar">
+        <div class="toolbar-title">
+          <h2 id="users-title">Usuários</h2>
+          <span class="task-count" id="user-count">0 cadastrados</span>
+        </div>
+        <div class="admin-actions">
+          <button class="back-button" id="back-to-tasks" type="button">← <span>Voltar às tarefas</span></button>
+          <button class="refresh-button" id="refresh-users" type="button" aria-label="Atualizar usuários" title="Atualizar usuários">↻ <span>Atualizar</span></button>
+        </div>
+      </div>
+      <div class="user-list" id="user-list" aria-live="polite"></div>
+    </section>
   </main>
 
-  <script>
-    const API_URL = 'http://localhost:3000/tarefa';
-    const demoTasks = [
-      { id: 1, titulo: 'Conectar o banco às rotas', concluida: true },
-      { id: 2, titulo: 'Testar a criação de tarefas', concluida: false },
-      { id: 3, titulo: 'Planejar a próxima entrega', concluida: false }
-    ];
-    let tasks = JSON.parse(localStorage.getItem('todo-api-tasks') || 'null') || demoTasks;
-    let currentFilter = 'all';
-    let apiAvailable = false;
-    const savedTheme = localStorage.getItem('todo-api-theme') || 'aurora';
-
-    function setTheme(theme) {
-      document.body.dataset.theme = theme;
-      localStorage.setItem('todo-api-theme', theme);
-      document.querySelectorAll('.theme-button').forEach((button) => {
-        button.classList.toggle('active', button.dataset.themeChoice === theme);
-      });
-    }
-
-    const save = () => localStorage.setItem('todo-api-tasks', JSON.stringify(tasks));
-    const setApiStatus = (connected) => {
-      apiAvailable = connected;
-      document.querySelector('#status-text').textContent = connected ? 'API conectada' : 'Modo demonstração';
-      document.querySelector('.dot').style.background = connected ? '#2c9b70' : '#ef806c';
-    };
-    const visibleTasks = () => tasks.filter((task) => currentFilter === 'all' || (currentFilter === 'done' ? task.concluida : !task.concluida));
-
-    function render() {
-      const completed = tasks.filter((task) => task.concluida).length;
-      document.querySelector('#total').textContent = tasks.length;
-      document.querySelector('#pending').textContent = tasks.length - completed;
-      document.querySelector('#done').textContent = completed;
-      document.querySelector('#progress').textContent = tasks.length ? Math.round(completed / tasks.length * 100) + '%' : '0%';
-      document.querySelector('#task-count').textContent = `${tasks.length} ${tasks.length === 1 ? 'item' : 'itens'}`;
-      const list = document.querySelector('#task-list');
-      const filtered = visibleTasks();
-      list.innerHTML = filtered.length ? filtered.map((task) => `
-        <article class="task ${task.concluida ? 'done' : ''}">
-          <button class="check" data-toggle="${task._id || task.id}" aria-label="Alternar tarefa">✓</button>
-          <p class="task-title">${escapeHtml(task.titulo)}</p>
-          <button class="delete" data-delete="${task._id || task.id}" aria-label="Excluir tarefa">×</button>
-        </article>`).join('') : '<div class="empty"><div class="empty-icon">✓</div><strong>Nada por aqui ainda.</strong>Adicione uma tarefa ou troque o filtro.</div>';
-    }
-
-    function escapeHtml(value) {
-      return String(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
-    }
-
-    async function tryApi() {
-      try {
-        const response = await fetch(API_URL);
-        if (!response.ok) throw new Error('API indisponível');
-        const remoteTasks = await response.json();
-        if (Array.isArray(remoteTasks)) tasks = remoteTasks.map((task) => ({ ...task, concluida: Boolean(task.concluida) }));
-        setApiStatus(true);
-        save(); render();
-      } catch (error) {
-        setApiStatus(false);
-      }
-    }
-
-    document.querySelector('#task-form').addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const input = document.querySelector('#title');
-      const title = input.value.trim();
-      if (!title) return;
-      try {
-        const response = await fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ titulo: title })
-        });
-        if (!response.ok) throw new Error('Não foi possível criar a tarefa');
-        tasks.push(await response.json());
-        setApiStatus(true);
-      } catch (error) {
-        setApiStatus(false);
-        tasks.push({ id: Date.now(), titulo: title, concluida: false });
-      }
-      input.value = ''; save(); render();
-    });
-
-    document.querySelector('#task-list').addEventListener('click', async (event) => {
-      const toggleId = event.target.dataset.toggle;
-      const deleteId = event.target.dataset.delete;
-      if (toggleId) {
-        const task = tasks.find((item) => String(item._id || item.id) === String(toggleId));
-        if (task) {
-          const concluida = !task.concluida;
-          if (apiAvailable) {
-            try {
-              const response = await fetch(`${API_URL}/${task._id || task.id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ titulo: task.titulo, concluida })
-              });
-              if (!response.ok) throw new Error('Não foi possível atualizar a tarefa');
-              Object.assign(task, await response.json());
-            } catch (error) {
-              setApiStatus(false);
-              task.concluida = concluida;
-            }
-          } else task.concluida = concluida;
-        }
-      }
-      if (deleteId) {
-        if (apiAvailable) {
-          try {
-            const response = await fetch(`${API_URL}/${deleteId}`, { method: 'DELETE' });
-            if (!response.ok) throw new Error('Não foi possível excluir a tarefa');
-          } catch (error) {
-            setApiStatus(false);
-          }
-        }
-        tasks = tasks.filter((item) => String(item._id || item.id) !== String(deleteId));
-      }
-      save(); render();
-    });
-
-    document.querySelectorAll('.filter').forEach((button) => button.addEventListener('click', () => {
-      currentFilter = button.dataset.filter;
-      document.querySelectorAll('.filter').forEach((item) => item.classList.toggle('active', item === button));
-      render();
-    }));
-
-    document.querySelectorAll('.theme-button').forEach((button) => button.addEventListener('click', () => {
-      setTheme(button.dataset.themeChoice);
-    }));
-
-    setTheme(savedTheme);
-    render();
-    tryApi();
-  </script>
+  <script src="./script.js"></script>
 </body>
 </html>
